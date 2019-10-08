@@ -14,6 +14,5 @@
         android:textColorHint="#000000"
         android:textColor="#000000"
         android:background="@xml/float_text_style"
-        android:textSize="20sp"
         />
 </FrameLayout>

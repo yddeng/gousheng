@@ -5,13 +5,14 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
-import pre.ydd.http.HttpClient;
+import com.example.gousheng.network.Coupon;
 
 public class FloatBallService extends Service {
     private ClipboardManager mClipboardManager;
     private ClipboardManager.OnPrimaryClipChangedListener mOnPrimaryClipChangedListener;
-    private HttpClient httpClient;
+    private Coupon coupon;
 
     private boolean isDoClip;
 
@@ -30,7 +31,7 @@ public class FloatBallService extends Service {
         super.onCreate();
         FloatWindowManager.addBallView(this);
         registerClipEvents();
-        httpClient = new HttpClient();
+        coupon = new Coupon();
     }
 
     @Override
@@ -46,7 +47,6 @@ public class FloatBallService extends Service {
      * 注册剪切板复制、剪切事件监听
      */
     private void registerClipEvents() {
-        Log.d("TAG", "registerClipEvents" );
         mClipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         mOnPrimaryClipChangedListener = new ClipboardManager.OnPrimaryClipChangedListener() {
             @Override
@@ -55,20 +55,28 @@ public class FloatBallService extends Service {
                     // 获取复制、剪切的文本内容
                     final CharSequence content =  mClipboardManager.getPrimaryClip().getItemAt(0).getText();
                     Log.d("TAG", "复制、剪切的内容为：" + content);
+                    Toast.makeText(FloatBallService.this, content.toString(), Toast.LENGTH_SHORT).show();
                     isDoClip = true;
 
-                    httpClient.Get("http://10.128.2.252:6363/test", "name=sss", new HttpClient.CallBack() {
-                        @Override
-                        public void Call(String result, Exception err) {
-                            if (err == null){
+                    if (Util.checkTkl(content.toString())) {
+                        coupon.getCoupon(content.toString(), new Coupon.CouponCallBack() {
+                            @Override
+                            public void Call(String result, Exception err) {
                                 isDoClip = false;
-                                //传给Manager
-                                FloatWindowManager.postText(content.toString()+ ":" +result);
-                            }else {
-                                Log.w("HttpClientGET", "Call: " + err.toString() );
+                                if (err == null) {
+                                    //传给Manager
+                                    FloatWindowManager.couponText(result);
+                                } else {
+                                    Log.w("HttpClientGET", "Call: " + err.toString());
+                                    FloatWindowManager.couponText(err.toString());
+                                }
                             }
-                        }
-                    });
+                        });
+                    }else {
+                        Log.d("TAG",  content.toString() + "不是一个淘口令");
+                        Toast.makeText(FloatBallService.this, "不是一个淘口令", Toast.LENGTH_SHORT).show();
+                        isDoClip = false;
+                    }
 
                 }
             }

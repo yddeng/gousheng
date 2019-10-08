@@ -1,4 +1,4 @@
 package com.example.gousheng.network;
 
-public class update {
+public class Update {
 }

@@ -12,17 +12,7 @@ public class HttpClient {
         void Call(String result,Exception err);
     }
 
-    // 链接超时时间（毫秒）
-    private int ConnectTimeout;
-    //设置读取超时时间（毫秒）
-    private int ReadTimeout;
-
-    public HttpClient(){
-        this.ConnectTimeout = 5000;
-        this.ReadTimeout = 5000;
-    }
-
-    public void Get(final String reqUrl,final String data,  final CallBack callBack){
+    public static void Get(final String reqUrl,final String data,  final CallBack callBack){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -33,8 +23,8 @@ public class HttpClient {
                     connection = (HttpURLConnection) url.openConnection();
                     //设置请求方法
                     connection.setRequestMethod("GET");
-                    connection.setConnectTimeout(ConnectTimeout);
-                    connection.setReadTimeout(ReadTimeout);
+                    connection.setConnectTimeout(5000);
+                    connection.setReadTimeout(5000);
 
                     //返回输入流
                     InputStream in = connection.getInputStream();
@@ -88,7 +78,7 @@ public class HttpClient {
     }
 */
 
-    public void Post(final String reqUrl,final String data, final CallBack callBack){
+    public static void Post(final String reqUrl,final String data, final CallBack callBack){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -99,8 +89,8 @@ public class HttpClient {
                     connection = (HttpURLConnection) url.openConnection();
                     //设置请求方法
                     connection.setRequestMethod("POST");
-                    connection.setConnectTimeout(ConnectTimeout);
-                    connection.setReadTimeout(ReadTimeout);
+                    connection.setConnectTimeout(5000);
+                    connection.setReadTimeout(5000);
 
                     //
                     connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");

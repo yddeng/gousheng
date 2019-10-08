@@ -1,6 +1,7 @@
 package com.example.gousheng;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.example.gousheng.network.Coupon;
 
 public class MainActivity extends Activity {
 
@@ -27,7 +30,7 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivityForResult(intent, 1);
-                Toast.makeText(this, "请先允许FloatBall出现在顶部", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "授权在其他应用之上显示内容", Toast.LENGTH_SHORT).show();
             }
         }
     }

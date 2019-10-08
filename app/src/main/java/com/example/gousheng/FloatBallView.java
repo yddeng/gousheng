@@ -1,9 +1,9 @@
 package com.example.gousheng;
 
-import android.accessibilityservice.AccessibilityService;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
-import android.os.Vibrator;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -92,12 +92,24 @@ public class FloatBallView extends LinearLayout {
 
     private void doClick(){
         Log.d("doClick", "doClick: doClick");
-        showText("clicked");
+        if (isShowText) {
+            if (Util.isApkInstalled(mService,"com.example.activitytest")) {
+                ComponentName componentName = new ComponentName("com.example.activitytest", "com.example.activitytest.FirstActivity");
+                //ComponentName componentName = new ComponentName("com.taobao.taobao", "com.taobao.taobao.UlandActivity");
+                Intent intent = new Intent();
+                intent.setComponent(componentName);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mService.startActivity(intent);
+            }
+        }else{
+            showText("clicked");
+        }
     }
 
     private void showText(String text){
         isShowText = true;
         mTextView.setText(text);
+        Log.d("showText", "showText: "+text);
 
         postDelayed(new Runnable() {
             @Override
