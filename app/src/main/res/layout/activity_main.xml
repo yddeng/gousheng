@@ -5,36 +5,54 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="5dp"
-        android:background="#4d4d4d"
-        android:gravity="center"
-        android:text="开启"
-        android:textColor="#ffffff"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/btn_quit"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="5dp"
-        android:background="#4d4d4d"
-        android:gravity="center"
-        android:text="关闭"
-        android:textColor="#ffffff"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/ll_overlay"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="50dp"
-        android:lineSpacingExtra="2dp"
-        android:text="@string/tip"
-        android:textColor="#333333"
-        android:textSize="12sp" />
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:padding="12dp"
+            android:text="开启悬浮窗"/>
+        <Switch
+            android:id="@+id/switch_floatball"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="1.悬浮窗授权"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="2.开启悬浮窗"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="3.进入手机淘宝，复制宝贝链接"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:text="4.自动查券"/>
+
+    </LinearLayout>
 </LinearLayout>

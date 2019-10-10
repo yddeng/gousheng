@@ -1,4 +1,4 @@
-package com.example.gousheng;
+package com.example.gousheng.manager;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -9,11 +9,9 @@ import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
-import org.json.JSONObject;
+import com.example.gousheng.view.FloatBallView;
 
-/**
- * Created by wangxiandeng on 2016/11/25.
- */
+import org.json.JSONObject;
 
 public class FloatWindowManager {
     private static FloatBallView mBallView;
@@ -66,15 +64,19 @@ public class FloatWindowManager {
                 if (code == 200){
                     JSONObject data = jsonObject.getJSONObject("data");
                     String couponInfo = data.getString("coupon_info");
-                    if (!TextUtils.isEmpty(couponInfo)){
-                        mBallView.httpIn("点击领取 "+couponInfo+"卷");
+                    String couponClickUrl = data.getString("coupon_click_url");
+                    if (!TextUtils.isEmpty(couponInfo) && !TextUtils.isEmpty(couponClickUrl)){
+                        mBallView.couponResp("点击领取 "+couponInfo+"卷",couponClickUrl);
+                    }else{
+                        mBallView.couponResp("当前宝贝暂无优惠券","");
                     }
                 }else {
                     Log.d("TAG", "code: "+code + jsonObject.getString("msg"));
+                    mBallView.couponResp("当前宝贝暂无优惠券","");
                 }
             }catch (Exception err){
                 Log.d("TAG", "couponText: "+err.toString());
-                mBallView.httpIn(text);
+                mBallView.couponResp(text,"");
             }
 
         }

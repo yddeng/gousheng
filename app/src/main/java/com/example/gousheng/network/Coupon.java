@@ -1,13 +1,7 @@
 package com.example.gousheng.network;
 
 import android.util.Log;
-
-import com.example.gousheng.FloatWindowManager;
-
-import org.json.JSONObject;
-
 import java.net.URLEncoder;
-import java.util.HashMap;
 
 import pre.ydd.http.HttpClient;
 

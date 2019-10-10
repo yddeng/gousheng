@@ -1,4 +1,4 @@
-package com.example.gousheng;
+package com.example.gousheng.service;
 
 import android.app.Service;
 import android.content.ClipboardManager;
@@ -7,7 +7,9 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.gousheng.manager.FloatWindowManager;
 import com.example.gousheng.network.Coupon;
+import com.example.gousheng.util.TaobaoUtil;
 
 public class FloatBallService extends Service {
     private ClipboardManager mClipboardManager;
@@ -58,7 +60,7 @@ public class FloatBallService extends Service {
                     Toast.makeText(FloatBallService.this, content.toString(), Toast.LENGTH_SHORT).show();
                     isDoClip = true;
 
-                    if (Util.checkTkl(content.toString())) {
+                    if (TaobaoUtil.checkTkl(content.toString())) {
                         coupon.getCoupon(content.toString(), new Coupon.CouponCallBack() {
                             @Override
                             public void Call(String result, Exception err) {

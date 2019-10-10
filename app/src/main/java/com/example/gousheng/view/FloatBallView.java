@@ -1,9 +1,11 @@
-package com.example.gousheng;
+package com.example.gousheng.view;
 
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -12,6 +14,11 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.gousheng.R;
+import com.example.gousheng.service.FloatBallService;
+import com.example.gousheng.util.ActivityUtil;
+import com.example.gousheng.util.CommonUtil;
 
 import java.lang.reflect.Field;
 
@@ -34,15 +41,17 @@ public class FloatBallView extends LinearLayout {
 
     //文本控制
     private boolean isShowText;
+    private boolean isHaveCoupon;
+    private String couponClickUrl;
     private static String staticText = "购省";
-    private final static long SHOW_TIME = 3000;
+    private final static long SHOW_TIME = 5000;
 
     //
     private Handler handler;
 
     public FloatBallView(Context context) {
         super(context);
-        inflate(getContext(), R.layout.layout_ball, this);
+        inflate(getContext(), R.layout.lay_floatball, this);
         mTextView = findViewById(R.id.ball_text);
         mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         mService = (FloatBallService) context;
@@ -88,18 +97,14 @@ public class FloatBallView extends LinearLayout {
     private void doCopy(){
         Log.d("doCopy", "doCopy: copy");
         Toast.makeText(mService,"copy",Toast.LENGTH_SHORT).show();
+
     }
 
     private void doClick(){
         Log.d("doClick", "doClick: doClick");
-        if (isShowText) {
-            if (Util.isApkInstalled(mService,"com.example.activitytest")) {
-                ComponentName componentName = new ComponentName("com.example.activitytest", "com.example.activitytest.FirstActivity");
-                //ComponentName componentName = new ComponentName("com.taobao.taobao", "com.taobao.taobao.UlandActivity");
-                Intent intent = new Intent();
-                intent.setComponent(componentName);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mService.startActivity(intent);
+        if (isShowText && isHaveCoupon) {
+            if (CommonUtil.isApkInstalled(mService,"com.taobao.taobao")) {
+                ActivityUtil.openCouponActivity(mService,couponClickUrl);
             }
         }else{
             showText("clicked");
@@ -118,11 +123,19 @@ public class FloatBallView extends LinearLayout {
                     isShowText = false;
                     mTextView.setText(staticText);
                 }
+                if (isHaveCoupon){
+                    isHaveCoupon = false;
+                }
             }
         }, SHOW_TIME);
     }
 
-    public void httpIn(final String text){
+    public void couponResp(final String text, String url){
+        if (!TextUtils.isEmpty(url)){
+            isHaveCoupon = true;
+            couponClickUrl = url;
+            Log.d("TAG", "couponResp: "+url);
+        }
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -169,28 +182,4 @@ public class FloatBallView extends LinearLayout {
     public void setLayoutParams(WindowManager.LayoutParams params) {
         mLayoutParams = params;
     }
-
-    /**
-     * 获取通知栏高度
-     */
-    private int getStatusBarHeight() {
-        int statusBarHeight = 0;
-        try {
-            Class<?> c = Class.forName("com.android.internal.R$dimen");
-            Object o = c.newInstance();
-            Field field = c.getField("status_bar_height");
-            int x = (Integer) field.get(o);
-            statusBarHeight = getResources().getDimensionPixelSize(x);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return statusBarHeight;
-    }
-
-    public int dip2px(float dip) {
-        return (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, dip, getContext().getResources().getDisplayMetrics()
-        );
-    }
-
 }
