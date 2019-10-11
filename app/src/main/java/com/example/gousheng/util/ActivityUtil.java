@@ -6,25 +6,26 @@ import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.gousheng.view.CustomDialog;
+import com.example.gousheng.view.DialogView;
 
 public class ActivityUtil {
     /**
      * 显示"悬浮窗权限"提醒对话框
      */
     public static void showOverlayAlertDialog(final AppCompatActivity activity) {
-        CustomDialog.showInstance(
+        DialogView.showInstance(
                 activity,
+                "授权",
                 "需要开启【悬浮窗权限】",
                 "取消",
-                new CustomDialog.CancleCallback() {
+                new DialogView.CancleCallback() {
                     @Override
                     public void onCancle() {
 
                     }
                 },
                 "去开启",
-                new CustomDialog.ConfirmCallback() {
+                new DialogView.ConfirmCallback() {
                     @Override
                     public void onConfirm() {
                         PermissionUtil.turnToOverlayPermission(activity);

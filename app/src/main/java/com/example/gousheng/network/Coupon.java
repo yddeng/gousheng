@@ -3,7 +3,7 @@ package com.example.gousheng.network;
 import android.util.Log;
 import java.net.URLEncoder;
 
-import pre.ydd.http.HttpClient;
+import per.ydd.http.HttpClient;
 
 public class Coupon {
 

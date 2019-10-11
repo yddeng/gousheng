@@ -1,145 +1,199 @@
 package com.example.gousheng.view;
 
-import android.content.ComponentName;
+
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.WindowManager;
+import android.view.animation.CycleInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.example.gousheng.R;
 import com.example.gousheng.service.FloatBallService;
 import com.example.gousheng.util.ActivityUtil;
 import com.example.gousheng.util.CommonUtil;
 
-import java.lang.reflect.Field;
-
 public class FloatBallView extends LinearLayout {
-    private TextView mTextView;
+    private View mFloatBallView; //悬浮窗
+    private TextView mTextView; //悬浮窗文本
+    private static FloatBallService mService; //service
+
+    private WindowManager mWindowManager;
     private WindowManager.LayoutParams mLayoutParams;
-    private static FloatBallService mService;
+    private int screenWidth;
+
+    private int mStatusBarHeight;
+    private int mOffsetToParent;
+    private int mOffsetToParentY;
 
     private long mLastDownTime;
-    private float mLastDownX;
-    private float mLastDownY;
-
-    private boolean mIsTouch;
-    private boolean mIsCopy;
+    private int mLastDownY,mLastDownX;
     private boolean mIsMove;
 
-    private float mTouchSlop;
-    private final static long LONG_CLICK_LIMIT = 500; //长按复制
-    private final static long CLICK_LIMIT = 200;
+    private float mTouchSlop; //轻微滑动
+    private final static long CLICK_LIMIT = 200; //点击时间限制
 
-    //文本控制
-    private boolean isShowText;
-    private boolean isHaveCoupon;
-    private String couponClickUrl;
-    private static String staticText = "购省";
-    private final static long SHOW_TIME = 5000;
+    /**
+     * 显示文本控制
+     */
+    private final static int SHOW_NONE = 0x000; //没有展示任何东西
+    private final static int SHOW_TEXT = 0x001; //展示普通文本
+    private final static int SHOW_COUPON = 0x002; //领卷文本
 
-    //
+    private int showType;
+    private Runnable runnable;
+    private String couponClickUrl; //领卷地址
+    private final static long SHOW_TIME = 4000; //内容显示时间
+
+    // handler
     private Handler handler;
 
     public FloatBallView(Context context) {
         super(context);
-        inflate(getContext(), R.layout.lay_floatball, this);
-        mTextView = findViewById(R.id.ball_text);
+        mWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        screenWidth = mWindowManager.getDefaultDisplay().getWidth();
+
+        mStatusBarHeight = getStatusBarHeight();
+        mOffsetToParent = CommonUtil.dip2px(context,25);
+        mOffsetToParentY = mStatusBarHeight + mOffsetToParent;
+
         mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         mService = (FloatBallService) context;
+
+        mFloatBallView = inflate(getContext(), R.layout.item_float_ball, this);
+        mTextView = mFloatBallView.findViewById(R.id.float_ball_tv);
+
         handler = new Handler();
+        initViewListener();
     }
 
-    @Override
-    public boolean onTouchEvent( MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mIsTouch = true;
-                mLastDownTime = System.currentTimeMillis();
-                mLastDownX = event.getX();
-                mLastDownY = event.getY();
-                postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mIsTouch && isCopy()) {
-                            mIsCopy = true;
-                            doCopy();
+    private void initViewListener(){
+        mFloatBallView.setOnTouchListener(new View.OnTouchListener(){
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mLastDownTime = System.currentTimeMillis();
+                        mLastDownY = (int)event.getY();
+                        mLastDownX = (int)event.getX();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (isTouchSlop(event)){
+                            return true;
                         }
-                    }
-                }, LONG_CLICK_LIMIT);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if (!mIsCopy && isTouchSlop(event)) {
-                    return true;
-                }
-                mIsMove = true;
-                break;
-            case MotionEvent.ACTION_UP:
-                if (mIsTouch && !mIsCopy && isClick(event)){
-                    doClick();
-                }
-                mIsTouch = false;
-                mIsMove = false;
-                mIsCopy = false;
-                break;
-        }
-        return true;
-    }
+                        mIsMove = true;
+                        mLayoutParams.x = (int) (event.getRawX() - mOffsetToParent);
+                        mLayoutParams.y = (int) (event.getRawY() - mOffsetToParentY);
+                        mWindowManager.updateViewLayout(mFloatBallView,mLayoutParams);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (!mIsMove && isClick(event)){
+                            doClick();
+                        }
+                        if (mLayoutParams.x != screenWidth){
+                            mLayoutParams.x = screenWidth;
+                            mWindowManager.updateViewLayout(mFloatBallView,mLayoutParams);
+                        }
+                        mIsMove = false;
 
-    private void doCopy(){
-        Log.d("doCopy", "doCopy: copy");
-        Toast.makeText(mService,"copy",Toast.LENGTH_SHORT).show();
-
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     private void doClick(){
         Log.d("doClick", "doClick: doClick");
-        if (isShowText && isHaveCoupon) {
-            if (CommonUtil.isApkInstalled(mService,"com.taobao.taobao")) {
-                ActivityUtil.openCouponActivity(mService,couponClickUrl);
-            }
-        }else{
-            showText("clicked");
+        switch (showType){
+            case SHOW_NONE:
+                showText(mService.getString(R.string.float_ball_none_click_txt),SHOW_TEXT);
+                break;
+            case SHOW_TEXT:
+                removeText();
+                break;
+            case SHOW_COUPON:
+                if (CommonUtil.isApkInstalled(mService,"com.taobao.taobao")) {
+                    ActivityUtil.openCouponActivity(mService,couponClickUrl);
+                }else {
+                    Toast.makeText(mService, "还没有安装淘宝app", Toast.LENGTH_SHORT).show();
+                }
+                removeText();
+                break;
         }
+        //cancelAnim();
     }
 
-    private void showText(String text){
-        isShowText = true;
+    private void showText(String text,int mShowType){
+        showType = mShowType;
         mTextView.setText(text);
         Log.d("showText", "showText: "+text);
 
-        postDelayed(new Runnable() {
+        runnable = new Runnable() {
             @Override
             public void run() {
-                if (isShowText) {
-                    isShowText = false;
-                    mTextView.setText(staticText);
-                }
-                if (isHaveCoupon){
-                    isHaveCoupon = false;
+                if (showType != SHOW_NONE){
+                    removeText();
                 }
             }
-        }, SHOW_TIME);
+        };
+        handler.postDelayed(runnable,SHOW_TIME);
     }
 
-    public void couponResp(final String text, String url){
+    private void removeText(){
+        showType = SHOW_NONE;
+        mTextView.setText(mService.getString(R.string.float_ball_hint_txt));
+        handler.removeCallbacks(runnable);
+    }
+
+    /**
+     * 查卷提示动作
+     */
+    private void startAnim(){
+        mTextView.animate().rotation(3f);
+        mTextView.animate().setInterpolator(new CycleInterpolator(40));
+        mTextView.animate().setDuration(5000);
+        mTextView.animate().start();
+    }
+
+    private void cancelAnim(){
+        mTextView.animate().cancel();
+        mTextView.setRotation(0);
+    }
+
+    /**
+     * 外部调用
+     */
+    public void postCoupon(final String text, String url){
         if (!TextUtils.isEmpty(url)){
-            isHaveCoupon = true;
             couponClickUrl = url;
-            Log.d("TAG", "couponResp: "+url);
+            Log.d("TAG", "couponResp: "+ url);
         }
         handler.post(new Runnable() {
             @Override
             public void run() {
-                showText(text);
+                cancelAnim();
+                showText(text,SHOW_COUPON);
+            }
+        });
+    }
+
+    public void postAnim(){
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                removeText();
+                startAnim();
             }
         });
     }
@@ -148,23 +202,13 @@ public class FloatBallView extends LinearLayout {
      * 判断是否是单击
      */
     private boolean isClick(MotionEvent event) {
-        float offsetX = Math.abs(event.getX() - mLastDownX);
         float offsetY = Math.abs(event.getY() - mLastDownY);
         long time = System.currentTimeMillis() - mLastDownTime;
-
-        if (offsetX < mTouchSlop * 2 && offsetY < mTouchSlop * 2 && time < CLICK_LIMIT) {
+        if (offsetY < mTouchSlop * 2 && time < CLICK_LIMIT) {
             return true;
         } else {
             return false;
         }
-    }
-
-    private boolean isCopy() {
-        long time = System.currentTimeMillis();
-        if (!mIsMove && (time - mLastDownTime >= LONG_CLICK_LIMIT)) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -173,13 +217,24 @@ public class FloatBallView extends LinearLayout {
     private boolean isTouchSlop(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        if (Math.abs(x - mLastDownX) < mTouchSlop && Math.abs(y - mLastDownY) < mTouchSlop) {
+        if ( Math.abs(x - mLastDownX) < mTouchSlop && Math.abs(y - mLastDownY) < mTouchSlop) {
             return true;
         }
         return false;
     }
 
+    /**
+     * 获取状态栏的高度
+     */
+    public int getStatusBarHeight() {
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        return getResources().getDimensionPixelSize(resourceId);
+    }
+
     public void setLayoutParams(WindowManager.LayoutParams params) {
         mLayoutParams = params;
     }
+
+
+
 }

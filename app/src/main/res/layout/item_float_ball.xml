@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/float_ball"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@xml/style_float_ball">
+
+    <TextView
+        android:id="@+id/float_ball_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/float_ball_hint_txt"
+        android:textColorHint="@android:color/white"
+        android:textColor="@android:color/white"
+        />
+</LinearLayout>

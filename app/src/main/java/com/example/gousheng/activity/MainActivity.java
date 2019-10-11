@@ -2,14 +2,18 @@ package com.example.gousheng.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.gousheng.R;
 import com.example.gousheng.service.FloatBallService;
 import com.example.gousheng.util.ActivityUtil;
+import com.example.gousheng.util.CommonUtil;
 import com.example.gousheng.util.PermissionUtil;
 
 
@@ -19,17 +23,21 @@ public class MainActivity extends AppCompatActivity {
     private Intent floatBallService;
     private Switch mSwitchFloatBall;
 
+    static String SWITCH_CLICK = "switch_click";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initView();
-        initViewListener();
-        initData();
+            setContentView(R.layout.activity_main);
+            initView();
+            initViewListener();
+            initData();
     }
 
     private void initView() {
-        mSwitchFloatBall = findViewById(R.id.switch_floatball);
+        mActivity = this;
+        mSwitchFloatBall = findViewById(R.id.sw_float);
+        floatBallService = new Intent(mActivity, FloatBallService.class);
     }
 
     /**
@@ -46,12 +54,10 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 if (isChecked){
-                    floatBallService = new Intent(MainActivity.this, FloatBallService.class);
                     startService(floatBallService);
                 }else {
-                    if ( floatBallService != null){
+                    if (CommonUtil.isServiceRunning(mActivity,FloatBallService.class.getName())){
                         stopService(floatBallService);
-                        floatBallService = null;
                     }
                 }
             }
@@ -63,12 +69,17 @@ public class MainActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        // 当前Activity静态引用赋值
-        mActivity = this;
         // 检查是否有悬浮窗权限，没有给出弹框提醒
-        if (!PermissionUtil.hasOverlayPermission(this)) {
-            ActivityUtil.showOverlayAlertDialog(this);
+        //if (!PermissionUtil.hasOverlayPermission(this)) {
+        //    ActivityUtil.showOverlayAlertDialog(this);
+        //}
+
+        //判断服务是否启动
+        if (CommonUtil.isServiceRunning(mActivity,FloatBallService.class.getName())){
+            Log.d("TAG", "initData: true");
+            mSwitchFloatBall.setChecked(true);
         }
+
     }
 
     @Override
@@ -77,5 +88,4 @@ public class MainActivity extends AppCompatActivity {
         mActivity = null;
         super.onDestroy();
     }
-
 }

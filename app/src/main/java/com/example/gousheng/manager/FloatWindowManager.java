@@ -3,12 +3,19 @@ package com.example.gousheng.manager;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.CycleInterpolator;
+import android.widget.TextView;
 
+import com.example.gousheng.R;
+import com.example.gousheng.service.FloatBallService;
 import com.example.gousheng.view.FloatBallView;
 
 import org.json.JSONObject;
@@ -16,9 +23,11 @@ import org.json.JSONObject;
 public class FloatWindowManager {
     private static FloatBallView mBallView;
     private static WindowManager mWindowManager;
+    private static FloatBallService mFloatBallService;
 
     public static void addBallView(Context context) {
         if (mBallView == null) {
+            mFloatBallService = (FloatBallService)context;
             WindowManager windowManager = getWindowManager(context);
             int screenWidth = windowManager.getDefaultDisplay().getWidth();
             int screenHeight = windowManager.getDefaultDisplay().getHeight();
@@ -61,22 +70,31 @@ public class FloatWindowManager {
             try {
                 JSONObject jsonObject = new JSONObject(text);
                 Integer code = jsonObject.getInt("code");
-                if (code == 200){
+                if (code == 200) {
                     JSONObject data = jsonObject.getJSONObject("data");
-                    String couponInfo = data.getString("coupon_info");
-                    String couponClickUrl = data.getString("coupon_click_url");
-                    if (!TextUtils.isEmpty(couponInfo) && !TextUtils.isEmpty(couponClickUrl)){
-                        mBallView.couponResp("点击领取 "+couponInfo+"卷",couponClickUrl);
-                    }else{
-                        mBallView.couponResp("当前宝贝暂无优惠券","");
+                    String coupon_info, coupon_click_url;
+                    Float max_commiccion_rate;
+                    String showText;
+
+                    if (!data.isNull("coupon_info") && !data.isNull("coupon_click_url")){
+                        coupon_info = data.getString("coupon_info");
+                        coupon_click_url = data.getString("coupon_click_url");
+                        mBallView.postCoupon("点击领取 " + coupon_info + "卷", coupon_click_url);
+                    }else {
+                        mBallView.postCoupon("当前宝贝暂无优惠券", null);
                     }
-                }else {
-                    Log.d("TAG", "code: "+code + jsonObject.getString("msg"));
-                    mBallView.couponResp("当前宝贝暂无优惠券","");
+
+                } else if (code == -1){ //没有参加活动
+                    Log.d("TAG", "code: " + code + jsonObject.getString("msg"));
+                    mBallView.postCoupon("当前宝贝暂无优惠券", null);
+                }else { //请求错误
+                    Log.d("TAG", "code: " + code +"msg: "+ jsonObject.getString("msg"));
+                    mBallView.postCoupon("code: " + code +"msg: "+ jsonObject.getString("msg"),null);
                 }
+
             }catch (Exception err){
                 Log.d("TAG", "couponText: "+err.toString());
-                mBallView.couponResp(text,"");
+                mBallView.postCoupon(err.toString(),null);
             }
 
         }
@@ -89,5 +107,7 @@ public class FloatWindowManager {
         return mWindowManager;
     }
 
-
+    public static void postAnim(){
+        mBallView.postAnim();
+    }
 }

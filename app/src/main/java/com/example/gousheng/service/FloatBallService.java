@@ -57,10 +57,12 @@ public class FloatBallService extends Service {
                     // 获取复制、剪切的文本内容
                     final CharSequence content =  mClipboardManager.getPrimaryClip().getItemAt(0).getText();
                     Log.d("TAG", "复制、剪切的内容为：" + content);
-                    Toast.makeText(FloatBallService.this, content.toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(FloatBallService.this, content.toString(), Toast.LENGTH_SHORT).show();
                     isDoClip = true;
 
                     if (TaobaoUtil.checkTkl(content.toString())) {
+                        //后台查卷提示
+                        FloatWindowManager.postAnim();
                         coupon.getCoupon(content.toString(), new Coupon.CouponCallBack() {
                             @Override
                             public void Call(String result, Exception err) {
@@ -76,7 +78,7 @@ public class FloatBallService extends Service {
                         });
                     }else {
                         Log.d("TAG",  content.toString() + "不是一个淘口令");
-                        Toast.makeText(FloatBallService.this, "不是一个淘口令", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(FloatBallService.this, "不是一个淘口令", Toast.LENGTH_SHORT).show();
                         isDoClip = false;
                     }
 

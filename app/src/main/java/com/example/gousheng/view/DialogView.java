@@ -23,12 +23,13 @@ import com.example.gousheng.R;
  *  自定义对话框
  */
 
-public class CustomDialog extends DialogFragment {
+public class DialogView extends DialogFragment {
 
     private int screenWidth; // 屏幕宽度
     private int screenHeight; // 屏幕高度
 
     private View rootView;
+    private TextView mTitleTV; //标题
     private TextView mMessageTV; // 消息
     private TextView mCancleTV; // 取消按钮
     private View mDividerV; // 按钮分割线（取消和确认按钮的分割线）
@@ -42,7 +43,7 @@ public class CustomDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        rootView = inflater.inflate(R.layout.lay_custom_dialog, container, false);
+        rootView = inflater.inflate(R.layout.item_dialog, container, false);
         init();
         initView();
         initData();
@@ -63,9 +64,10 @@ public class CustomDialog extends DialogFragment {
      * 初始化视图
      */
     private void initView() {
+        mTitleTV = rootView.findViewById(R.id.tv_title);
         mMessageTV = rootView.findViewById(R.id.tv_message);
         mCancleTV = rootView.findViewById(R.id.tv_cancle);
-        mDividerV = rootView.findViewById(R.id.v_divider);
+        mDividerV = rootView.findViewById(R.id.tv_divider);
         mConfirmTV = rootView.findViewById(R.id.tv_confirm);
     }
 
@@ -74,9 +76,17 @@ public class CustomDialog extends DialogFragment {
      */
     private void initData() {
         Bundle arguments = getArguments();
+        CharSequence title = arguments.getCharSequence("title"); // 标题
         CharSequence message = arguments.getCharSequence("message"); // 消息
         CharSequence cancle = arguments.getCharSequence("cancle"); // 取消按钮
         CharSequence confirm = arguments.getCharSequence("confirm"); // 确认按钮
+
+        // 设置消息
+        if (!TextUtils.isEmpty(title)) {
+            mTitleTV.setText(title);
+        } else {
+            mTitleTV.setVisibility(View.GONE);
+        }
 
         // 设置消息
         if (!TextUtils.isEmpty(message)) {
@@ -178,8 +188,8 @@ public class CustomDialog extends DialogFragment {
      * @param confirmCallback "确认按钮"点击回调
      * @return
      */
-    public static CustomDialog showInstance(AppCompatActivity activity, CharSequence message, CharSequence cancle, CancleCallback cancleCallback, CharSequence confirm, ConfirmCallback confirmCallback) {
-        return showInstance(activity, message, cancle, cancleCallback, confirm, confirmCallback, null);
+    public static DialogView showInstance(AppCompatActivity activity,CharSequence title, CharSequence message, CharSequence cancle, CancleCallback cancleCallback, CharSequence confirm, ConfirmCallback confirmCallback) {
+        return showInstance(activity,title, message, cancle, cancleCallback, confirm, confirmCallback, null);
     }
 
     /**
@@ -194,9 +204,10 @@ public class CustomDialog extends DialogFragment {
      * @param backCallback    "Back键"点击回调
      * @return
      */
-    public static CustomDialog showInstance(AppCompatActivity activity, CharSequence message, CharSequence cancle, CancleCallback cancleCallback, CharSequence confirm, ConfirmCallback confirmCallback, BackCallback backCallback) {
-        CustomDialog dialog = new CustomDialog();
+    public static DialogView showInstance(AppCompatActivity activity,CharSequence title, CharSequence message, CharSequence cancle, CancleCallback cancleCallback, CharSequence confirm, ConfirmCallback confirmCallback, BackCallback backCallback) {
+        DialogView dialog = new DialogView();
         Bundle bundle = new Bundle();
+        bundle.putCharSequence("title", title);
         bundle.putCharSequence("message", message);
         bundle.putCharSequence("cancle", cancle);
         dialog.mCancleCallback = cancleCallback;

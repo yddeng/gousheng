@@ -2,33 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:padding="12dp"
-            android:text="开启悬浮窗"/>
-        <Switch
-            android:id="@+id/switch_floatball"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-    </LinearLayout>
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="50dp"/>
+        android:layout_height="50dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include layout="@layout/item_float_switch"/>
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,23 +19,33 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
+            android:text="使用方法:"
+            android:textSize="20dp"
+            android:paddingLeft="10dp"
+            android:paddingVertical="10dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingVertical="5dp"
             android:text="1.悬浮窗授权"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
+            android:paddingLeft="10dp"
+            android:paddingVertical="5dp"
             android:text="2.开启悬浮窗"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
+            android:paddingLeft="10dp"
+            android:paddingVertical="5dp"
             android:text="3.进入手机淘宝，复制宝贝链接"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
+            android:paddingLeft="10dp"
+            android:paddingVertical="5dp"
             android:text="4.自动查券"/>
-
     </LinearLayout>
 </LinearLayout>
