@@ -11,13 +11,12 @@ public class Coupon {
        void Call(String result,Exception err);
     }
 
-    private String url = "http://api.tbk.dingdanxia.com/tbk/tkl_privilege";
-    private String apiKey = "wpVmHmKSg9RTdgFJidqryKOJ574rzAde";
+    private static String url = "http://api.tbk.dingdanxia.com/tbk/tkl_privilege";
+    private static String apiKey = "wpVmHmKSg9RTdgFJidqryKOJ574rzAde";
 
-    public  void getCoupon(String tkl,final CouponCallBack callBack){
-        String param = "";
+    public static  void getCoupon(String tkl,final CouponCallBack callBack){
         try {
-            param = "apikey="+ URLEncoder.encode(apiKey,"UTF-8")+"&tkl="+URLEncoder.encode(tkl,"UTF-8");
+            String param = "apikey="+ URLEncoder.encode(apiKey,"UTF-8")+"&tkl="+URLEncoder.encode(tkl,"UTF-8");
             Log.d("coupon", "getCoupon: "+param);
             HttpClient.Post(url, param, new HttpClient.CallBack() {
                 @Override

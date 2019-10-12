@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -27,25 +28,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingVertical="5dp"
             android:text="1.悬浮窗授权"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingVertical="5dp"
             android:text="2.开启悬浮窗"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingVertical="5dp"
-            android:text="3.进入手机淘宝，复制宝贝链接"/>
+            android:text="3.进入手机淘宝"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="10dp"
-            android:paddingVertical="5dp"
-            android:text="4.自动查券"/>
+            android:text="4.选择宝贝，复制宝贝链接"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="5.若有优惠券，点击悬浮窗领取"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="bottom">
+    <Button
+        android:id="@+id/bottom_ll_btn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="检查更新"/>
+    <TextView
+        android:id="@+id/bottom_ll_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="v1.0.0"
+        android:gravity="center"
+        />
     </LinearLayout>
 </LinearLayout>

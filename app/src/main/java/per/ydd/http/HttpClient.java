@@ -12,14 +12,14 @@ public class HttpClient {
         void Call(String result,Exception err);
     }
 
-    public static void Get(final String reqUrl,final String data,  final CallBack callBack){
+    public static void Get(final String reqUrl,  final CallBack callBack){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection connection = null;
                 BufferedReader reader = null;
                 try {
-                    URL url = new URL(String.format("%s?%s",reqUrl,data ));
+                    URL url = new URL(reqUrl);
                     connection = (HttpURLConnection) url.openConnection();
                     //设置请求方法
                     connection.setRequestMethod("GET");

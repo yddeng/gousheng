@@ -5,16 +5,13 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.gousheng.manager.FloatWindowManager;
 import com.example.gousheng.network.Coupon;
 import com.example.gousheng.util.TaobaoUtil;
 
 public class FloatBallService extends Service {
     private ClipboardManager mClipboardManager;
     private ClipboardManager.OnPrimaryClipChangedListener mOnPrimaryClipChangedListener;
-    private Coupon coupon;
 
     private boolean isDoClip;
 
@@ -33,7 +30,6 @@ public class FloatBallService extends Service {
         super.onCreate();
         FloatWindowManager.addBallView(this);
         registerClipEvents();
-        coupon = new Coupon();
     }
 
     @Override
@@ -63,7 +59,7 @@ public class FloatBallService extends Service {
                     if (TaobaoUtil.checkTkl(content.toString())) {
                         //后台查卷提示
                         FloatWindowManager.postAnim();
-                        coupon.getCoupon(content.toString(), new Coupon.CouponCallBack() {
+                        Coupon.getCoupon(content.toString(), new Coupon.CouponCallBack() {
                             @Override
                             public void Call(String result, Exception err) {
                                 isDoClip = false;

@@ -1,21 +1,12 @@
-package com.example.gousheng.manager;
+package com.example.gousheng.service;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
-import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.CycleInterpolator;
-import android.widget.TextView;
-
-import com.example.gousheng.R;
-import com.example.gousheng.service.FloatBallService;
 import com.example.gousheng.view.FloatBallView;
 
 import org.json.JSONObject;
