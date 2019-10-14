@@ -17,12 +17,13 @@ public class Update {
         void Call(String result,Exception err);
     }
 
-    private static String url = "http://www.yddeng.xyz:6363/update";
+    private static String url = "http://www.yddeng.xyz:6363/gousheng/update";
+    //private static String url = "http://10.128.2.252:6363/gousheng/update";
 
-    public static void getUpdate(String version,final Update.UpdateCallBack callBack) {
+    public static void getUpdate(String versionCode,final Update.UpdateCallBack callBack) {
         try {
-            String param = "version=" + URLEncoder.encode(version, "UTF-8");
-            Log.d("TAG", "getCoupon: " + param);
+            String param = "versionCode=" + URLEncoder.encode(versionCode, "UTF-8");
+            Log.d("TAG", "Update Param: " + param);
             HttpClient.Post(url, param, new HttpClient.CallBack() {
                 @Override
                 public void Call(String result, Exception err) {

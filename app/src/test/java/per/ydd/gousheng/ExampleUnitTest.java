@@ -1,4 +1,4 @@
-package per.example.gousheng;
+package per.ydd.gousheng;
 
 import org.junit.Test;
 

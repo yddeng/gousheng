@@ -112,8 +112,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initData() {
         proper = ProperUtil.getProperties(mActivity,"appConfig");
-        String name =  "v"+ BuildConfig.VERSION_NAME;
-        bottomTV.setText(name);
+        bottomTV.setText(BuildConfig.VERSION_NAME);
 
         //判断服务是否启动
         if (CommonUtil.isServiceRunning(mActivity,FloatBallService.class.getName())){
@@ -223,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void installApk(File file) {
         //调用系统安装程序
+        Log.d("TAG", "installApk: "+Uri.fromFile(file));
         Intent intent = new Intent(Intent.ACTION_VIEW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
