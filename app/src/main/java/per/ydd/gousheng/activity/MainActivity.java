@@ -1,37 +1,38 @@
-package com.example.gousheng.activity;
+package per.ydd.gousheng.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.PersistableBundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 
-import com.example.gousheng.R;
-import com.example.gousheng.network.Update;
-import com.example.gousheng.service.FloatBallService;
-import com.example.gousheng.util.ActivityUtil;
-import com.example.gousheng.util.CommonUtil;
-import com.example.gousheng.util.PermissionUtil;
-import com.example.gousheng.util.ProperUtil;
-import com.example.gousheng.view.DialogView;
+import per.ydd.gousheng.BuildConfig;
+import per.ydd.gousheng.R;
+import per.ydd.gousheng.network.Update;
+import per.ydd.gousheng.service.FloatBallService;
+import per.ydd.gousheng.util.ActivityUtil;
+import per.ydd.gousheng.util.CommonUtil;
+import per.ydd.gousheng.util.PermissionUtil;
+import per.ydd.gousheng.util.ProperUtil;
+import per.ydd.gousheng.view.DialogView;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -45,6 +46,12 @@ public class MainActivity extends AppCompatActivity {
     private Button bottomBtn;
 
     Properties proper;
+    Handler handler = new Handler();
+
+    private static String[] permissions = new String[]{
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,
+    };
+    private int mRequestCode = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         floatBallService = new Intent(mActivity, FloatBallService.class);
         bottomTV = findViewById(R.id.bottom_ll_tv);
         bottomBtn = findViewById(R.id.bottom_ll_btn);
-
     }
 
     /**
@@ -72,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         mSwitchFloatBall.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!PermissionUtil.hasOverlayPermission(MainActivity.this)) {
+                if (!PermissionUtil.checkOverlayPermission(MainActivity.this)) {
                     ActivityUtil.showOverlayAlertDialog(MainActivity.this);
                     mSwitchFloatBall.setChecked(false);
                     return;
@@ -91,7 +97,12 @@ public class MainActivity extends AppCompatActivity {
         bottomBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkVersion();
+                List<String> mPermissionList = PermissionUtil.checkPermissions(mActivity,permissions);
+                if (mPermissionList.size() >0){
+                    ActivityCompat.requestPermissions(mActivity,mPermissionList.toArray(new String[mPermissionList.size()]),mRequestCode);
+                }else {
+                    checkVersion();
+                }
             }
         });
     }
@@ -100,13 +111,8 @@ public class MainActivity extends AppCompatActivity {
      * 初始化数据
      */
     private void initData() {
-        // 检查是否有悬浮窗权限，没有给出弹框提醒
-        //if (!PermissionUtil.hasOverlayPermission(this)) {
-        //    ActivityUtil.showOverlayAlertDialog(this);
-        //}
-
         proper = ProperUtil.getProperties(mActivity,"appConfig");
-        String name =  "v"+CommonUtil.getVersionName(mActivity);
+        String name =  "v"+ BuildConfig.VERSION_NAME;
         bottomTV.setText(name);
 
         //判断服务是否启动
@@ -115,14 +121,18 @@ public class MainActivity extends AppCompatActivity {
             mSwitchFloatBall.setChecked(true);
         }
 
+        //读写权限申请
+        List<String> mPermissionList = PermissionUtil.checkPermissions(mActivity,permissions);
+        if (mPermissionList.size() >0){
+            ActivityCompat.requestPermissions(mActivity,mPermissionList.toArray(new String[mPermissionList.size()]),mRequestCode);
+        }
     }
 
     /**
      * 检查更新
      */
-    Handler handler = new Handler();
     private void checkVersion(){
-        Update.getUpdate(CommonUtil.getVersionCode(mActivity), new Update.UpdateCallBack() {
+        Update.getUpdate(Integer.toString(BuildConfig.VERSION_CODE), new Update.UpdateCallBack() {
             @Override
             public void Call(String result, Exception err) {
                 if (err == null){
@@ -171,12 +181,11 @@ public class MainActivity extends AppCompatActivity {
     private void startDown(String downUrl){
         final ProgressDialog dialog = new ProgressDialog(mActivity);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        dialog.setMessage("正在下载");
+        dialog.setMessage("下载中...");
         dialog.setCancelable(false);
         dialog.show();
 
-        String name = downUrl.substring(downUrl.lastIndexOf("/")+1);
-        String savePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() +"/"+ name;
+        String savePath = CommonUtil.getSaveFilePath(downUrl);
         Update.downloadApk(downUrl, savePath, new Update.UpdateProgress() {
             @Override
             public void setMax(Integer max) {
@@ -202,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(mActivity,"ret"+errr.toString(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(mActivity,"ret"+errr,Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -214,11 +223,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private void installApk(File file) {
         //调用系统安装程序
-        Intent intent = new Intent();
-        intent.setAction("android.intent.action.VIEW");
-        intent.addCategory("android.intent.category.DEFAULT");
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(mActivity, BuildConfig.APPLICATION_ID+".fileprovider", file);
+            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+        } else {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+        }
         startActivity(intent);
     }
 

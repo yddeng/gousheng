@@ -1,4 +1,4 @@
-package com.example.gousheng.service;
+package per.ydd.gousheng.service;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import com.example.gousheng.view.FloatBallView;
+import per.ydd.gousheng.view.FloatBallView;
 
 import org.json.JSONObject;
 

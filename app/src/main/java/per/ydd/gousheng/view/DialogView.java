@@ -1,4 +1,4 @@
-package com.example.gousheng.view;
+package per.ydd.gousheng.view;
 
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -16,7 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.gousheng.R;
+import per.ydd.gousheng.R;
 
 
 /**

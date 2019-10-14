@@ -1,11 +1,9 @@
-package com.example.gousheng.view;
+package per.ydd.gousheng.view;
 
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,12 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.example.gousheng.R;
-import com.example.gousheng.service.FloatBallService;
-import com.example.gousheng.util.ActivityUtil;
-import com.example.gousheng.util.CommonUtil;
+import per.ydd.gousheng.R;
+import per.ydd.gousheng.service.FloatBallService;
+import per.ydd.gousheng.util.ActivityUtil;
+import per.ydd.gousheng.util.CommonUtil;
 
 public class FloatBallView extends LinearLayout {
     private View mFloatBallView; //悬浮窗

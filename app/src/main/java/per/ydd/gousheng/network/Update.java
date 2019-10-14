@@ -1,14 +1,11 @@
-package com.example.gousheng.network;
+package per.ydd.gousheng.network;
 
-import android.app.ProgressDialog;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;

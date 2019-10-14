@@ -1,4 +1,4 @@
-package com.example.gousheng.util;
+package per.ydd.gousheng.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.gousheng.view.DialogView;
+import per.ydd.gousheng.view.DialogView;
 
 public class ActivityUtil {
     /**

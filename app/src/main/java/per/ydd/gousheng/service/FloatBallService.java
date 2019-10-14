@@ -1,4 +1,4 @@
-package com.example.gousheng.service;
+package per.ydd.gousheng.service;
 
 import android.app.Service;
 import android.content.ClipboardManager;
@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.example.gousheng.network.Coupon;
-import com.example.gousheng.util.TaobaoUtil;
+import per.ydd.gousheng.network.Coupon;
+import per.ydd.gousheng.util.TaobaoUtil;
 
 public class FloatBallService extends Service {
     private ClipboardManager mClipboardManager;

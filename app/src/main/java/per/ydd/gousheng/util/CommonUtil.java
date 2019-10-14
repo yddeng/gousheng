@@ -1,16 +1,12 @@
-package com.example.gousheng.util;
+package per.ydd.gousheng.util;
 
 import android.app.ActivityManager;
-import android.app.DownloadManager;
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.TypedValue;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class CommonUtil {
@@ -55,44 +51,13 @@ public class CommonUtil {
     }
 
     /**
-     * 获取APP版本号
-     */
-    public static String getVersionCode(Context ctx) {
-        // 获取packagemanager的实例
-        String version = "";
-        try {
-            PackageManager packageManager = ctx.getPackageManager();
-            //getPackageName()是你当前程序的包名
-            PackageInfo packInfo = packageManager.getPackageInfo(ctx.getPackageName(), 0);
-            version = Integer.toString(packInfo.versionCode);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return version;
-    }
-
-    public static String getVersionName(Context ctx) {
-        // 获取packagemanager的实例
-        String name = "";
-        try {
-            PackageManager packageManager = ctx.getPackageManager();
-            //getPackageName()是你当前程序的包名
-            PackageInfo packInfo = packageManager.getPackageInfo(ctx.getPackageName(), 0);
-            name = packInfo.versionName;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return name;
-    }
-
-    /**
      * 获取文件保存路径 sdcard根目录/download/文件名称
      * @param fileUrl
      * @return
      */
     public static String getSaveFilePath(String fileUrl){
-        String fileName=fileUrl.substring(fileUrl.lastIndexOf("/")+1,fileUrl.length());//获取文件名称
-        String newFilePath= Environment.getExternalStorageDirectory() + "/Download/"+fileName;
+        String fileName=fileUrl.substring(fileUrl.lastIndexOf("/")+1);//获取文件名称
+        String newFilePath= Environment.getExternalStorageDirectory() + "/"+fileName;
         return newFilePath;
     }
 
