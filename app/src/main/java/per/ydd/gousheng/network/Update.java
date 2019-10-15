@@ -17,8 +17,8 @@ public class Update {
         void Call(String result,Exception err);
     }
 
-    private static String url = "http://www.yddeng.xyz:6363/gousheng/update";
-    //private static String url = "http://10.128.2.252:6363/gousheng/update";
+    private static String url = "http://www.yddeng.xyz:10020/gousheng/update";
+    //private static String url = "http://10.128.2.252:10020/gousheng/update";
 
     public static void getUpdate(String versionCode,final Update.UpdateCallBack callBack) {
         try {
