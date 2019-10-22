@@ -35,14 +35,14 @@ public class ActivityUtil {
     }
 
     /**
-     * 打开淘宝应用粉丝福利购
+     * 打开淘宝应用浏览器
      * com.taobao.taobao   com.taobao.browser.BrowserActivity
      */
-    public static void openCouponActivity(Context context,String clickUrl) {
+    public static void openBrowserActivity(Context context,String url) {
         Intent intent = new Intent();
         intent.setAction("android.intent.action.View");
         intent.setClassName("com.taobao.taobao", "com.taobao.browser.BrowserActivity");
-        Uri uri = Uri.parse(clickUrl);//clickUrl,领券地址
+        Uri uri = Uri.parse(url);//clickUrl,领券地址
         intent.setData(uri);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);

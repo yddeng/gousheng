@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     Properties proper;
     Handler handler = new Handler();
+
+    private Data data ;
 
     private static String[] permissions = new String[]{
         Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -114,6 +117,19 @@ public class MainActivity extends AppCompatActivity {
         proper = ProperUtil.getProperties(mActivity,"appConfig");
         bottomTV.setText(BuildConfig.VERSION_NAME);
 
+        data = (Data)getApplication();
+        Update.getUpdate(Integer.toString(BuildConfig.VERSION_CODE), new Update.UpdateCallBack() {
+            @Override
+            public void Call(String result, Exception err) {
+                if (err == null){
+                    data.setUpdateData(result);
+                }else {
+                    Log.d("TAG", "Call: "+err.toString());
+                }
+            }
+        });
+
+
         //判断服务是否启动
         if (CommonUtil.isServiceRunning(mActivity,FloatBallService.class.getName())){
             Log.d("TAG", "initData: true");
@@ -131,50 +147,43 @@ public class MainActivity extends AppCompatActivity {
      * 检查更新
      */
     private void checkVersion(){
-        Update.getUpdate(Integer.toString(BuildConfig.VERSION_CODE), new Update.UpdateCallBack() {
-            @Override
-            public void Call(String result, Exception err) {
-                if (err == null){
-                    try {
-                        JSONObject jsonObject = new JSONObject(result);
-                        Integer code = jsonObject.getInt("code");
-                        if (code == 2 ){
-                            String msg = jsonObject.getString("message");
-                            final String downUrl = jsonObject.getString("down_url");
-                            DialogView.showInstance(mActivity, "更新", msg, "忽略", new DialogView.CancleCallback() {
-                                @Override
-                                public void onCancle() {
-
-                                }
-                            }, "更新", new DialogView.ConfirmCallback() {
-                                @Override
-                                public void onConfirm() {
-                                    Log.d("TAG", "onConfirm: "+downUrl);
-                                    startDown(downUrl);
-                                }
-                            });
-                        }else{
-                            String msg = jsonObject.getString("message");
-                            DialogView.showInstance(mActivity, "更新", msg, "确定", new DialogView.CancleCallback() {
-                                @Override
-                                public void onCancle() {                            }
-                            }, null,null);
-                        }
-                    }catch (Exception e){
-                        Log.d("TAG", "checkVersion: "+e.toString());
-                    }
-                }else{
-                    Log.d("TAG", "err: "+err.toString());
-                    final String errr = err.toString();
-                    handler.post(new Runnable() {
+        String result = data.getUpdateData();
+        if (TextUtils.isEmpty(result)) {
+            Log.d("TAG", "checkVersion: data is nil");
+            DialogView.showInstance(mActivity, "更新", "当前已是最新版本", "确定", new DialogView.CancleCallback() {
+                @Override
+                public void onCancle() {                            }
+            }, null,null);
+        }else {
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                Integer code = jsonObject.getInt("code");
+                if (code == 2 ){
+                    String msg = jsonObject.getString("message");
+                    final String downUrl = jsonObject.getString("down_url");
+                    DialogView.showInstance(mActivity, "更新", msg, "忽略", new DialogView.CancleCallback() {
                         @Override
-                        public void run() {
-                            Toast.makeText(mActivity,"post"+errr.toString(),Toast.LENGTH_LONG).show();
+                        public void onCancle() {
+
+                        }
+                    }, "更新", new DialogView.ConfirmCallback() {
+                        @Override
+                        public void onConfirm() {
+                            Log.d("TAG", "onConfirm: "+downUrl);
+                            startDown(downUrl);
                         }
                     });
+                }else{
+                    String msg = jsonObject.getString("message");
+                    DialogView.showInstance(mActivity, "更新", msg, "确定", new DialogView.CancleCallback() {
+                        @Override
+                        public void onCancle() {                            }
+                    }, null,null);
                 }
+            }catch (Exception e){
+                Log.d("TAG", "checkVersion: "+e.toString());
             }
-        });
+        }
     }
 
     private void startDown(String downUrl){

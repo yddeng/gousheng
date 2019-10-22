@@ -48,7 +48,7 @@ public class FloatBallView extends LinearLayout {
 
     private int showType;
     private Runnable runnable;
-    private String couponClickUrl; //领卷地址
+    private String clickUrl; //淘客地址
     private final static long SHOW_TIME = 4000; //内容显示时间
 
     // handler
@@ -120,7 +120,7 @@ public class FloatBallView extends LinearLayout {
                 break;
             case SHOW_COUPON:
                 if (CommonUtil.isApkInstalled(mService,"com.taobao.taobao")) {
-                    ActivityUtil.openCouponActivity(mService,couponClickUrl);
+                    ActivityUtil.openBrowserActivity(mService,clickUrl);
                 }else {
                     Toast.makeText(mService, "还没有安装淘宝app", Toast.LENGTH_SHORT).show();
                 }
@@ -170,18 +170,25 @@ public class FloatBallView extends LinearLayout {
     /**
      * 外部调用
      */
-    public void postCoupon(final String text, String url){
-        if (!TextUtils.isEmpty(url)){
-            couponClickUrl = url;
-            Log.d("TAG", "couponResp: "+ url);
+    public void postCoupon(final String text, String url) {
+        if (!TextUtils.isEmpty(url)) {
+            clickUrl = url;
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    cancelAnim();
+                    showText(text, SHOW_COUPON);
+                }
+            });
+        } else {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    cancelAnim();
+                    showText(text, SHOW_TEXT);
+                }
+            });
         }
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                cancelAnim();
-                showText(text,SHOW_COUPON);
-            }
-        });
     }
 
     public void postAnim(){
