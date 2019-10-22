@@ -122,7 +122,7 @@ public class FloatBallView extends LinearLayout {
                 if (CommonUtil.isApkInstalled(mService,"com.taobao.taobao")) {
                     ActivityUtil.openBrowserActivity(mService,clickUrl);
                 }else {
-                    Toast.makeText(mService, "还没有安装淘宝app", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mService, "还没有安装对应app", Toast.LENGTH_SHORT).show();
                 }
                 removeText();
                 break;
