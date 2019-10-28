@@ -8,8 +8,26 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class CommonUtil {
+
+    /**
+     * 判断是不是淘口令
+     */
+    public static boolean checkTkl(String paramString)
+    {
+        return Pattern.compile("([\\p{Sc}])\\w{8,12}([\\p{Sc}])").matcher(paramString).find();
+    }
+
+    /**
+     * 判断是不是一个京东链接
+     */
+    public static boolean checkJDUrl(String paramString){
+        return paramString.contains("jd.com");
+    }
+
+
     /**
      * 检查是否安装了某应用
      */

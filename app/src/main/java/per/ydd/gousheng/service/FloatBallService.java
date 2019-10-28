@@ -5,15 +5,23 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import per.ydd.gousheng.network.Coupon;
-import per.ydd.gousheng.util.TaobaoUtil;
+import per.ydd.gousheng.util.CommonUtil;
 
 public class FloatBallService extends Service {
     private ClipboardManager mClipboardManager;
     private ClipboardManager.OnPrimaryClipChangedListener mOnPrimaryClipChangedListener;
 
     private boolean isDoClip;
+
+    /**
+     * 当前类型
+     */
+    public int type;
+    public final static int TYPE_TAOBAO =  1;
+    public final static int TYPE_JINGDONG = 2;
 
     @Override
     public IBinder onBind(Intent intent){
@@ -28,6 +36,7 @@ public class FloatBallService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        type = TYPE_TAOBAO;
         FloatWindowManager.addBallView(this);
         registerClipEvents();
     }
@@ -53,30 +62,9 @@ public class FloatBallService extends Service {
                     // 获取复制、剪切的文本内容
                     final CharSequence content =  mClipboardManager.getPrimaryClip().getItemAt(0).getText();
                     Log.d("TAG", "复制、剪切的内容为：" + content);
-                    //Toast.makeText(FloatBallService.this, content.toString(), Toast.LENGTH_SHORT).show();
                     isDoClip = true;
 
-                    if (TaobaoUtil.checkTkl(content.toString())) {
-                        //后台查卷提示
-                        FloatWindowManager.postAnim();
-                        Coupon.getCoupon(content.toString(), new Coupon.CouponCallBack() {
-                            @Override
-                            public void Call(String result, Exception err) {
-                                isDoClip = false;
-                                if (err == null) {
-                                    //传给Manager
-                                    FloatWindowManager.couponText(result);
-                                } else {
-                                    Log.w("HttpClientGET", "Call: " + err.toString());
-                                    FloatWindowManager.couponText(err.toString());
-                                }
-                            }
-                        });
-                    }else {
-                        Log.d("TAG",  content.toString() + "不是一个淘口令");
-                        //Toast.makeText(FloatBallService.this, "不是一个淘口令", Toast.LENGTH_SHORT).show();
-                        isDoClip = false;
-                    }
+                    doEvent(content.toString());
 
                 }
             }
@@ -84,6 +72,42 @@ public class FloatBallService extends Service {
         mClipboardManager.addPrimaryClipChangedListener(mOnPrimaryClipChangedListener);
     }
 
+    private void doEvent(String elem){
+        switch (type){
+            case TYPE_TAOBAO:
+                if (CommonUtil.checkTkl(elem)) {
+                    //后台查卷提示
+                    FloatWindowManager.postAnim();
+                    Coupon.tbCoupon(elem, new Coupon.CouponCallBack() {
+                        @Override
+                        public void Call(String text, String clickUrl, Exception err) {
+                            isDoClip = false;
+                            FloatWindowManager.couponRet(TYPE_TAOBAO,text,clickUrl,err);
+                        }
+                    });
+                }else{
+                    Log.d("TAG",  elem + "不是一个淘口令");
+                    //Toast.makeText(FloatBallService.this, "不是一个淘口令", Toast.LENGTH_SHORT).show();
+                    isDoClip = false;
+                }
+                break;
+            case TYPE_JINGDONG:
+                if (CommonUtil.checkJDUrl(elem)){
+                    Coupon.jdCoupon(elem, new Coupon.CouponCallBack() {
+                        @Override
+                        public void Call(String text, String clickUrl, Exception err) {
+                            isDoClip = false;
+                            FloatWindowManager.couponRet(TYPE_JINGDONG,text,clickUrl,err);
+                        }
+                    });
+                }else {
+                    Log.d("TAG",  elem + "不是一个京东链接");
+                    //Toast.makeText(FloatBallService.this, "不是一个淘口令", Toast.LENGTH_SHORT).show();
+                    isDoClip = false;
+                }
+                break;
+        }
+    }
 
 
 }

@@ -130,9 +130,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        /*
         //判断服务是否启动
         if (CommonUtil.isServiceRunning(mActivity,FloatBallService.class.getName())){
             Log.d("TAG", "initData: true");
+            mSwitchFloatBall.setChecked(true);
+        }
+        */
+
+        // 如果已经授权，直接开启
+        if (PermissionUtil.checkOverlayPermission(MainActivity.this)) {
             mSwitchFloatBall.setChecked(true);
         }
 

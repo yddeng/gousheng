@@ -57,53 +57,13 @@ public class FloatWindowManager {
         }
     }
 
-    public static void couponText(String text){
+    public static void couponRet(int type,String text,String url,Exception err){
         if (mBallView != null){
-            try {
-                Log.d("TAG", "couponText: "+text);
-                JSONObject jsonObject = new JSONObject(text);
-                Integer code = jsonObject.getInt("code");
-                if (code == 200) {
-                    JSONObject data = jsonObject.getJSONObject("data");
-                    String coupon_info, coupon_click_url;
-                    String max_commission_rate;
-                    String item_url;
-
-                    if ((!data.isNull("coupon_info") && !data.isNull("coupon_click_url")) &&
-                    (!data.isNull("max_commission_rate"))){ //有卷有佣金
-                        coupon_info = data.getString("coupon_info");
-                        coupon_click_url = data.getString("coupon_click_url");
-                        //max_commission_rate = Float.parseFloat(data.getString("max_commission_rate"));
-                        max_commission_rate = data.getString("max_commission_rate");
-                        mBallView.postCoupon("点击领取 " + coupon_info + "卷,利率"+max_commission_rate, coupon_click_url);
-                    }else  if ((!data.isNull("coupon_info") && !data.isNull("coupon_click_url")) &&
-                            (data.isNull("max_commission_rate"))) { //有卷无佣金
-                        coupon_info = data.getString("coupon_info");
-                        coupon_click_url = data.getString("coupon_click_url");
-                        mBallView.postCoupon("点击领取 " + coupon_info + "卷", coupon_click_url);
-                    }else if ((data.isNull("coupon_info") || data.isNull("coupon_click_url")) &&
-                            (!data.isNull("max_commission_rate"))) {//无卷有佣金
-                        max_commission_rate = data.getString("max_commission_rate");
-                        item_url = data.getString("item_url");
-                        mBallView.postCoupon("点击领取 利率"+max_commission_rate, item_url);
-                    }else {//无卷无佣金
-                        mBallView.postCoupon("当前宝贝暂无优惠券", null);
-                    }
-
-
-                } else if (code == -1){ //没有参加活动
-                    Log.d("TAG", "code: " + code + jsonObject.getString("msg"));
-                    mBallView.postCoupon("当前宝贝暂无优惠券", null);
-                }else { //请求错误
-                    Log.d("TAG", "code: " + code +"msg: "+ jsonObject.getString("msg"));
-                    mBallView.postCoupon("code: " + code +"msg: "+ jsonObject.getString("msg"),null);
-                }
-
-            }catch (Exception err){
-                Log.d("TAG", "couponText: "+err.toString());
+            if (err == null){
+                mBallView.postCoupon(text,url);
+            }else {
                 mBallView.postCoupon(err.toString(),null);
             }
-
         }
     }
 
