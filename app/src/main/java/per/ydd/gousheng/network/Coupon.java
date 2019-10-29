@@ -18,7 +18,7 @@ public class Coupon {
        void Call(String text , String clickUrl,Exception err);
     }
 
-    private static String apiKey = "fao50lMQ6Qca8nhNlpguD7u68IlxVSnx";
+    private static String apiKey = "";
     /**
      * 淘宝
      */
