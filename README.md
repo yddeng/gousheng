@@ -10,6 +10,4 @@
 ![2](https://github.com/yddeng/gousheng/blob/master/assets/img_5.jpg)
 
 ### 下载
-www.yddeng.xyz/gousheng
-
-或者 项目release
+ 项目release
